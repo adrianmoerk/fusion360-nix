@@ -1,0 +1,16 @@
+name: Check launcher
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: DeterminateSystems/nix-installer-action@3138316df39ed29be04236d7ffc686fa525866aa
+      - name: Format
+        run: nix fmt -- --check .
+      - name: Build and offline checks
+        run: nix flake check --no-update-lock-file --no-write-lock-file

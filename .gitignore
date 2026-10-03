@@ -1,0 +1,9 @@
+/result*
+/compat/
+/logs/
+/auth-browser-profile/
+/browser-requests/
+/last-browser-url
+/runtime-tmp/
+/launch.lock
+__pycache__/
