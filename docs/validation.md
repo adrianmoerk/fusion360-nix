@@ -3,8 +3,8 @@
 ## Confirmed
 
 - Nix package builds and offline flake tests pass.
-- The original user rebuilt NixOS, closed the old session and confirmed that the
-  managed package launches and works with the existing authenticated prefix.
+- After rebuilding NixOS and closing the old session, the managed package was
+  verified to launch and work with the existing authenticated prefix.
 - That existing prefix previously passed sign-in, retained login, sketch and
   extrude, cloud save/reopen, Preferences and right-button orbit tests.
 - The Home Manager generation builds with desktop entries and all Autodesk

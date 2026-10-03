@@ -4,10 +4,14 @@ A Nix flake that installs and launches the Windows Autodesk Fusion application
 through GE-Proton11-5. It includes the Proton/FHS runtime, WebView2 installation,
 Wine compatibility settings, a desktop launcher and Autodesk sign-in callbacks.
 
-Tested on x86_64 NixOS with Niri and Xwayland. The user rebuilt NixOS and confirmed
-that the managed launcher works with an existing authenticated installation.
+Tested on x86_64 NixOS with Niri and Xwayland. After rebuilding, the managed
+launcher was verified with an existing authenticated installation.
 See [validation](docs/validation.md) for the separate fresh-install test and
 remaining limits. This is an unofficial launcher, not a native Linux port.
+
+The setup started from [stonegray's fusion360-linux scripts](https://github.com/stonegray/fusion360-linux).
+See [credits and third-party attribution](CREDITS.md) for that work and the
+runtime, packaging and dependency contributors.
 
 ## Recommended: Home Manager
 
@@ -17,7 +21,7 @@ Add the flake as an input:
 inputs.fusion.url = "github:adrianmoerk/fusion360-nix";
 ```
 
-Import its module into your user's Home Manager configuration:
+Import its module into your Home Manager configuration:
 
 ```nix
 imports = [ inputs.fusion.homeManagerModules.default ];
@@ -122,5 +126,5 @@ without modifying their targets. CI runs these checks without a Fusion account.
 See [validation](docs/validation.md) and [contribution notes](CONTRIBUTING.md).
 
 Launcher code is MIT licensed. Dependencies retain their own licenses; Autodesk
-Fusion remains under Autodesk's terms. Compatibility research included
-[stonegray/fusion360-linux](https://github.com/stonegray/fusion360-linux).
+Fusion remains under Autodesk's terms. See [credits and third-party attribution](CREDITS.md)
+for the original script project, runtime creators and dependency contributors.
