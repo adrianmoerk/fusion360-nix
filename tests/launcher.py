@@ -1,5 +1,6 @@
 """Offline checks; never open Fusion or read an existing user prefix."""
 import fcntl
+import json
 import os
 import pathlib
 import subprocess
@@ -47,4 +48,39 @@ with tempfile.TemporaryDirectory(prefix='fusion-check-') as directory:
     assert (system32 / 'icuuc.dll').read_bytes() == b'native-icuuc'
     assert (system32 / 'icuin.dll').read_bytes() == b'native-icuin'
     assert not (system32 / 'icuuc.dll').is_symlink()
-print('Passed offline launcher, callback, private request, and symlink replacement checks.')
+    # Exercise the actual runner through a fake FHS runtime, without Wine or a
+    # user prefix. Desktop Qt scaling must not leak into Windows coordinates.
+    runtime = root / 'fake-runtime/bin'
+    runtime.mkdir(parents=True)
+    capture = root / 'runner.json'
+    steam_run = runtime / 'steam-run'
+    steam_run.write_text('#!' + sys.executable + '\n'
+                         'import json, os, sys\n'
+                         'with open(os.environ["CAPTURE"], "w") as f:\n'
+                         '    json.dump({"env": dict(os.environ), "args": sys.argv[1:]}, f)\n')
+    steam_run.chmod(0o755)
+    runner_env = dict(env, FUSION_RUNTIME=str(runtime.parent), FUSION_PROTON='/fake/proton',
+                      CAPTURE=str(capture), QT_SCALE_FACTOR='2', QT_SCREEN_SCALE_FACTORS='2;1.5')
+    for key in ['FUSION_QTWEBENGINE_FLAGS', 'FUSION_QT_QUICK_BACKEND', 'FUSION_QT_SCALE_FACTOR']:
+        runner_env.pop(key, None)
+    def run_runner(overrides):
+        subprocess.run(['bash', str(libexec / 'fusion-proton.sh'), 'fake.exe', 'argument with spaces'],
+                       env=dict(runner_env, **overrides), check=True)
+        return json.loads(capture.read_text())
+    result = run_runner({})
+    settings = result['env']
+    assert result['args'] == ['/fake/proton', 'runinprefix', 'fake.exe', 'argument with spaces']
+    assert settings['NEUTRON_GRAPHICS_API'] == 'GLCORE'
+    assert settings['QT_QUICK_BACKEND'] == 'software'
+    assert '--disable-gpu' in settings['QTWEBENGINE_CHROMIUM_FLAGS'].split()
+    assert '--disable-gpu-compositing' in settings['QTWEBENGINE_CHROMIUM_FLAGS'].split()
+    assert '--use-gl=angle' not in settings['QTWEBENGINE_CHROMIUM_FLAGS'].split()
+    assert settings['QT_SCALE_FACTOR'] == '1'
+    assert settings['QT_AUTO_SCREEN_SCALE_FACTOR'] == '0'
+    assert 'QT_SCREEN_SCALE_FACTORS' not in settings
+    result = run_runner(dict(FUSION_QTWEBENGINE_FLAGS='--no-sandbox --use-gl=angle --use-angle=gl',
+                             FUSION_QT_QUICK_BACKEND='rhi', FUSION_QT_SCALE_FACTOR='1.25'))
+    assert result['env']['QT_QUICK_BACKEND'] == 'rhi'
+    assert result['env']['QT_SCALE_FACTOR'] == '1.25'
+    assert result['env']['QTWEBENGINE_CHROMIUM_FLAGS'] == '--no-sandbox --use-gl=angle --use-angle=gl'
+print('Passed offline launcher, callback, private request, symlink, rendering and scaling checks.')

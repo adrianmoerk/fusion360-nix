@@ -13,8 +13,15 @@ export PROTON_NO_SECCOMP=1 PROTON_USE_XALIA=0
 export TZ=UTC
 export WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS='--no-sandbox --disable-gpu --disable-gpu-compositing'
 export QTWEBENGINE_DISABLE_SANDBOX=1
-export QTWEBENGINE_CHROMIUM_FLAGS='--no-sandbox --use-gl=angle --use-angle=gl --disable-direct-composition'
+# Keep embedded dialogs off Wine's failing Chromium/Qt GPU sharing path.
+# This does not change Fusion's accelerated GLCORE modeling viewport.
+export QTWEBENGINE_CHROMIUM_FLAGS="${FUSION_QTWEBENGINE_FLAGS:---no-sandbox --disable-gpu --disable-gpu-compositing --disable-gpu-rasterization --disable-direct-composition}"
+export QT_QUICK_BACKEND="${FUSION_QT_QUICK_BACKEND:-software}"
 export QSG_RHI_BACKEND=opengl
+# Use Wine's display coordinates; do not inherit a second Qt scale from Linux.
+export QT_SCALE_FACTOR="${FUSION_QT_SCALE_FACTOR:-1}"
+export QT_AUTO_SCREEN_SCALE_FACTOR=0
+unset QT_SCREEN_SCALE_FACTORS
 export NEUTRON_GRAPHICS_API=GLCORE
 export WINEDLLOVERRIDES='bcp47langs=;winhttp=b;icuuc,icuin,icudt=n,b'
 export BROWSER="$libexec/browser-request.sh"

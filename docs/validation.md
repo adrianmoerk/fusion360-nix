@@ -37,3 +37,18 @@ URL. The working existing prefix was not modified by this test.
   does not pin the installed Fusion or WebView2 versions.
 - Secret scans reduce risk; they do not prove the absence of every possible
   secret. The public repository excludes all runtime and account state.
+
+## Dialog rendering and sketch snapping follow-up (2026-10-30)
+
+The launcher now defaults to software rendering for Chromium and Qt Quick,
+while retaining GLCORE for the modeling viewport. This follows Qt's documented
+[software rendering controls](https://doc.qt.io/qt-6/qtwebengine-features.html#using-software-rendering).
+Qt scale and per-screen scale inherited from the Linux desktop are isolated.
+Offline checks exercise the runner's exported environment and explicit renderer
+and scale overrides, using a fake runtime with no access to a user prefix.
+
+Runtime acceptance remains pending: open Save on both a new and an existing
+modified design; verify name, location, Cancel and reopening; approach a sketch
+line midpoint from several directions and verify the constraint. No change to
+Fusion's internal snap radius is claimed. Assembly snapping is untested. The
+user's running Fusion session was left open to preserve their project.

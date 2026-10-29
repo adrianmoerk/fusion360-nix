@@ -76,7 +76,29 @@ window defaults. Using the packaged defaults is recommended.
 
 ## Rendering and mouse controls
 
-OpenGL and a Wine desktop reduce black panels and cursor jumps on Niri. Maximize
+The modeling viewport uses accelerated OpenGL. Embedded Chromium dialogs and
+Qt Quick panels use software rendering to avoid Wine's GPU surface-sharing
+failures (including a dimmed main window with an invisible Save dialog).
+The launcher also isolates Windows Qt scaling from Linux's `QT_SCALE_FACTOR`
+and per-screen overrides so pointer hit testing uses the same coordinates as
+the UI. These changes need runtime confirmation on your GPU; they do not
+increase Fusion's internal sketch midpoint snap radius.
+
+For a controlled comparison with the previous dialog renderer, launch with:
+
+```sh
+FUSION_QT_QUICK_BACKEND=rhi FUSION_QTWEBENGINE_FLAGS='--no-sandbox --use-gl=angle --use-angle=gl --disable-direct-composition' fusion360
+```
+
+`FUSION_QT_SCALE_FACTOR` can explicitly override the default Qt factor of `1`.
+Close Fusion normally before comparing launch settings. Avoid combining Qt
+scaling with a second desktop scale when diagnosing small snap targets.
+
+In sketches, hold **Shift** while approaching an edge's midpoint to expose its
+midpoint snap; use a **Midpoint** constraint when you need an exact relationship.
+A tiny snap target is a separate runtime check from dialog visibility.
+
+A Wine desktop reduces cursor jumps on Niri. Maximize
 Fusion **inside** the Wine desktop so the timeline remains visible.
 
 Right-click popup windows may still flash black. For this setup, open Text
