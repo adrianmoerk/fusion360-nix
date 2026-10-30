@@ -47,8 +47,12 @@ Qt scale and per-screen scale inherited from the Linux desktop are isolated.
 Offline checks exercise the runner's exported environment and explicit renderer
 and scale overrides, using a fake runtime with no access to a user prefix.
 
-Runtime acceptance remains pending: open Save on both a new and an existing
-modified design; verify name, location, Cancel and reopening; approach a sketch
-line midpoint from several directions and verify the constraint. No change to
-Fusion's internal snap radius is claimed. Assembly snapping is untested. The
-user's running Fusion session was left open to preserve their project.
+User-reported follow-up on the existing desktop installation: **Save As**
+allowed saving with the correct filename. Much of the surrounding interface
+was still covered in black, but the picker worked and the user accepted this
+as sufficient for now. This confirms a usable Save As path, not a complete
+rendering fix or separate verification of the ordinary Save dialog.
+
+Location selection, Cancel/reopening, and sketch midpoint targeting remain
+unverified. No change to Fusion's internal snap radius is claimed. Assembly
+snapping is untested. Further rendering work is deferred at the user's request.
